@@ -1,23 +1,60 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SpaceInvaders
+namespace Asteroid
 {
     class Sprite
     {
-        public Vector2 Speed;
-        public Vector2 Position;
-        public int Width;
-        public int Height;
+        public Vector2 Position { get; set; }
+        Texture2D Texture { get; set; }
+        Vector2 Scale { get; set; }
+        Color Tint { get; set; }
+        public float Rotation { get; set; }
+        Vector2 Origin { get; set; }
 
-        public Sprite (Vector2 position, int width, int height, Vector2 speed)
+
+
+        public float ScaledWidth
+        {
+            get
+            {
+                return Texture.Width * Scale.X;
+            }
+        }
+
+        public float ScaledHeight
+        {
+            get
+            {
+                return Texture.Height * Scale.Y;
+            }
+        }
+
+        public Rectangle HitBox
+        {
+            get
+            {
+                return new Rectangle((int)Position.X, (int)Position.Y, (int)ScaledWidth, (int)ScaledHeight);
+            }
+        }
+
+        public Sprite(Vector2 position, Texture2D texture, Vector2 scale, Color tint, float rotation, Vector2 origin)
         {
             Position = position;
-            Width = width;
-            Height = height;
-            Speed = speed;
+            Texture = texture;
+            Scale = scale;
+            Tint = tint;
+            Rotation = rotation;
+            Origin = origin;
+
+        }
+
+        public void Draw(SpriteBatch sb)
+        {
+            sb.Draw(Texture, Position, null, Tint, Rotation, Origin, Scale, SpriteEffects.None, 0f);
         }
     }
 }

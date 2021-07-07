@@ -20,6 +20,8 @@ namespace SpaceInvaders
         {
             // TODO: Add your initialization logic here
 
+
+
             base.Initialize();
         }
 
@@ -28,6 +30,8 @@ namespace SpaceInvaders
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -37,6 +41,8 @@ namespace SpaceInvaders
 
             // TODO: Add your update logic here
 
+
+
             base.Update(gameTime);
         }
 
@@ -45,7 +51,11 @@ namespace SpaceInvaders
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            spriteBatch.Begin();
 
+
+
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }
