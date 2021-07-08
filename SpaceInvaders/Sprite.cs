@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Asteroid
+namespace SpaceInvaders
 {
-    class Sprite
+    public class Sprite
     {
         public Vector2 Position { get; set; }
         Texture2D Texture { get; set; }

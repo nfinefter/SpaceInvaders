@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Asteroid
+namespace SpaceInvaders
 {
-    class Asteroid : Sprite
+    public class Invaders : Sprite
     {
-        public Asteroid(Vector2 position, Texture2D texture, Vector2 scale, Color tint, float rotation, Vector2 origin)
+        public Invaders(Vector2 position, Texture2D texture, Vector2 scale, Color tint, float rotation, Vector2 origin)
             : base(position, texture, scale, tint, rotation, origin)
         {
 

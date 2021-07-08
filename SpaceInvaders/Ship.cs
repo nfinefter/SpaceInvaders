@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Asteroid
+namespace SpaceInvaders
 {
-    class Ship : Sprite
+    public class Ship : Sprite
     {
         public float Radius { get; set; }
 
