@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 
 namespace SpaceInvaders
@@ -23,7 +24,10 @@ namespace SpaceInvaders
         Ship ship;
         List<Invaders> invaders = new List<Invaders>();
         List<Bullet> bullets = new List<Bullet>();
+        TimeSpan spaceInvaderSpawnDelay = TimeSpan.FromSeconds(2);
+        TimeSpan elapsedTime = TimeSpan.Zero;
         KeyboardState prevks;
+        Random rand = new Random();
 
         protected override void Initialize()
         {
@@ -47,7 +51,7 @@ namespace SpaceInvaders
             shipTexture = Content.Load<Texture2D>("ship");
 
             ship = new Ship(new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 50), shipTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2), 0);
-            invaders.Add(new Invaders(new Vector2(50, 50), invaderTexture, new Vector2(0.2f, 0.2f), Color.White, 0, new Vector2(0, 0)));
+            
             
         }
 
@@ -115,8 +119,13 @@ namespace SpaceInvaders
                     }
                 }
             }
+            if (elapsedTime >= spaceInvaderSpawnDelay)
+            {
+                elapsedTime = TimeSpan.Zero;
 
-            prevks = ks;
+                invaders.Add(new Invaders(new Vector2(rand.Next(0, GraphicsDevice.Viewport.Width), 50), invaderTexture, new Vector2(0.2f, 0.2f), Color.White, 0, new Vector2(0, 0)));
+            }
+                prevks = ks;
             base.Update(gameTime);
         }
 
