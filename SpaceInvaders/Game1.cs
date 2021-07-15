@@ -22,9 +22,12 @@ namespace SpaceInvaders
         Texture2D invaderTexture;
         Texture2D shipTexture;
         Ship ship;
-        List<Invaders> invaders = new List<Invaders>();
         List<Bullet> bullets = new List<Bullet>();
-        TimeSpan spaceInvaderSpawnDelay = TimeSpan.FromSeconds(2);
+        List<Bullet> evilBullets = new List<Bullet>();
+
+        Group group;
+
+        TimeSpan spaceInvaderMoveDelay = TimeSpan.FromSeconds(2);
         TimeSpan elapsedTime = TimeSpan.Zero;
         KeyboardState prevks;
         Random rand = new Random();
@@ -33,7 +36,7 @@ namespace SpaceInvaders
         {
             // TODO: Add your initialization logic here\
 
-            graphics.PreferredBackBufferWidth = 400;
+            graphics.PreferredBackBufferWidth = 500;
             graphics.PreferredBackBufferHeight = 700;
             graphics.ApplyChanges();
 
@@ -51,8 +54,12 @@ namespace SpaceInvaders
             shipTexture = Content.Load<Texture2D>("ship");
 
             ship = new Ship(new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 50), shipTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2), 0);
+
             
+            group = new Group(new Vector2(0, 0), 4, 8, invaderTexture);
             
+
+           
         }
 
         protected override void Update(GameTime gameTime)
@@ -63,6 +70,11 @@ namespace SpaceInvaders
             // TODO: Add your update logic here
 
             KeyboardState ks = Keyboard.GetState();
+
+            elapsedTime += gameTime.ElapsedGameTime;
+
+            
+            
 
             if (ks.IsKeyDown(Keys.Left) == true && prevks.IsKeyDown(Keys.Right) == false)
             {
@@ -109,22 +121,47 @@ namespace SpaceInvaders
             }
             for (int i = 0; i < bullets.Count; i++)
             {
-                for (int a = 0; a < invaders.Count; a++)
+                for (int a = 0; a < group.WidthCount; a++)
                 {
-                    if (bullets[i].HitBox.Intersects(invaders[a].HitBox))
+                    for (int b = 0; b < group.HeightCount; b++)
                     {
-                        bullets.RemoveAt(i);
-                        invaders.RemoveAt(a);
-                        break;
+                        if (bullets[i].HitBox.Intersects(group.Invaders[a,b].HitBox))
+                        {
+                            bullets.RemoveAt(i);
+                            group.Invaders[a, b] = null;
+                            break;
+                        }
                     }
+                    
                 }
             }
-            if (elapsedTime >= spaceInvaderSpawnDelay)
+            if (elapsedTime >= spaceInvaderMoveDelay)
             {
-                elapsedTime = TimeSpan.Zero;
+                for (int i = 0; i < invaders.Count; i++)
+                {
+                    invaders[i].Update();
+                    if (invaders[i].Position.X + invaders[i].ScaledWidth >= GraphicsDevice.Viewport.Width)
+                    {
+                        invaders[i].Speed = new Vector2(-20, 0);
+                        for (int a = 0; a < invaders.Count; a++)
+                        {
+                            invaders[a].Speed = new Vector2(0, 20);
+                        }
+                       
+                    }
+                    else if (invaders[i].Position.X <= 0)
+                    {
+                        invaders[i].Speed = new Vector2(20, 0);
+                        for (int a = 0; a < invaders.Count; a++)
+                        {
+                            invaders[a].Speed = new Vector2(0, 20);
+                        }
 
-                invaders.Add(new Invaders(new Vector2(rand.Next(0, GraphicsDevice.Viewport.Width), 50), invaderTexture, new Vector2(0.2f, 0.2f), Color.White, 0, new Vector2(0, 0)));
+                    }
+                }
+                elapsedTime = TimeSpan.Zero;
             }
+           
                 prevks = ks;
             base.Update(gameTime);
         }

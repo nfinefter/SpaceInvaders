@@ -8,10 +8,17 @@ namespace SpaceInvaders
 {
     public class Invaders : Sprite
     {
-        public Invaders(Vector2 position, Texture2D texture, Vector2 scale, Color tint, float rotation, Vector2 origin)
+        public Vector2 Speed;
+
+
+        public Invaders(Vector2 position, Texture2D texture, Vector2 scale, Color tint, float rotation, Vector2 origin, Vector2 speed)
             : base(position, texture, scale, tint, rotation, origin)
         {
-
+            Speed = speed;
+        }
+        public void Update()
+        {
+            Position += Speed;
         }
     }
 }
