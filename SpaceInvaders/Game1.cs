@@ -137,26 +137,30 @@ namespace SpaceInvaders
             }
             if (elapsedTime >= spaceInvaderMoveDelay)
             {
-                for (int i = 0; i < invaders.Count; i++)
+                for (int a = 0; a < group.WidthCount; a++)
                 {
-                    invaders[i].Update();
-                    if (invaders[i].Position.X + invaders[i].ScaledWidth >= GraphicsDevice.Viewport.Width)
-                    {
-                        invaders[i].Speed = new Vector2(-20, 0);
-                        for (int a = 0; a < invaders.Count; a++)
-                        {
-                            invaders[a].Speed = new Vector2(0, 20);
-                        }
-                       
-                    }
-                    else if (invaders[i].Position.X <= 0)
-                    {
-                        invaders[i].Speed = new Vector2(20, 0);
-                        for (int a = 0; a < invaders.Count; a++)
-                        {
-                            invaders[a].Speed = new Vector2(0, 20);
-                        }
 
+                    for (int b = 0; b < group.HeightCount; b++)
+                    {
+                        group.Invaders[a, b].Update();
+                        if (group.Invaders[a, b].Position.X + group.Invaders[a, b].ScaledWidth >= GraphicsDevice.Viewport.Width)
+                        {
+                            group.Invaders[a, b].Speed = new Vector2(-20, 0);
+                            for (int i = 0; a < group.Invaders.Length; i++)
+                            {
+                                group.Invaders[a, b].Speed = new Vector2(0, 20);
+                            }
+
+                        }
+                        else if (group.Invaders[a, b].Position.X <= 0)
+                        {
+                            group.Invaders[a, b].Speed = new Vector2(20, 0);
+                            for (int c = 0; c < group.Invaders.Length; c++)
+                            {
+                                group.Invaders[a, b].Speed = new Vector2(0, 20);
+                            }
+
+                        }
                     }
                 }
                 elapsedTime = TimeSpan.Zero;
@@ -174,10 +178,13 @@ namespace SpaceInvaders
             spriteBatch.Begin();
 
             ship.Draw(spriteBatch);
-           
-            for (int i = 0; i < invaders.Count; i++)
+
+            for (int a = 0; a < group.WidthCount; a++)
             {
-                invaders[i].Draw(spriteBatch);
+                for (int b = 0; b < group.HeightCount; b++)
+                {
+                    group.Invaders[a, b].Draw(spriteBatch);
+                }
             }
             for (int i = 0; i < bullets.Count; i++)
             {
