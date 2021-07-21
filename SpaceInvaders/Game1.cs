@@ -21,9 +21,11 @@ namespace SpaceInvaders
         Texture2D bulletTexture;
         Texture2D invaderTexture;
         Texture2D shipTexture;
+        Texture2D shieldTexture;
         Ship ship;
         List<Bullet> bullets = new List<Bullet>();
         List<Bullet> evilBullets = new List<Bullet>();
+        List<Shield> shields = new List<Shield>();
 
         Group group;
 
@@ -52,14 +54,16 @@ namespace SpaceInvaders
             bulletTexture = Content.Load<Texture2D>("bullet");
             invaderTexture = Content.Load<Texture2D>("invader");
             shipTexture = Content.Load<Texture2D>("ship");
+            shieldTexture = Content.Load<Texture2D>("shield");
 
             ship = new Ship(new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 50), shipTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2), 0);
-
+           
+            shields.Add(new Shield(new Vector2(100, GraphicsDevice.Viewport.Height - 130), shieldTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2)));
+            shields.Add(new Shield(new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 130), shieldTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2)));
+            shields.Add(new Shield(new Vector2(GraphicsDevice.Viewport.Width - 100, GraphicsDevice.Viewport.Height - 130), shieldTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2)));
             
             group = new Group(new Vector2(0, 0), 4, 8, invaderTexture);
             
-
-           
         }
 
         protected override void Update(GameTime gameTime)
@@ -73,8 +77,6 @@ namespace SpaceInvaders
 
             elapsedTime += gameTime.ElapsedGameTime;
 
-            
-            
 
             if (ks.IsKeyDown(Keys.Left) == true && prevks.IsKeyDown(Keys.Right) == false)
             {
@@ -125,11 +127,14 @@ namespace SpaceInvaders
                 {
                     for (int b = 0; b < group.HeightCount; b++)
                     {
-                        if (bullets[i].HitBox.Intersects(group.Invaders[a,b].HitBox))
+                        if (group.Invaders[a, b] != null)
                         {
-                            bullets.RemoveAt(i);
-                            group.Invaders[a, b] = null;
-                            break;
+                            if (bullets[i].HitBox.Intersects(group.Invaders[a, b].HitBox))
+                            {
+                                bullets.RemoveAt(i);
+                                group.Invaders[a, b] = null;
+                                break;
+                            }
                         }
                     }
                     
@@ -142,31 +147,38 @@ namespace SpaceInvaders
 
                     for (int b = 0; b < group.HeightCount; b++)
                     {
-                        group.Invaders[a, b].Update();
-                        if (group.Invaders[a, b].Position.X + group.Invaders[a, b].ScaledWidth >= GraphicsDevice.Viewport.Width)
+                        if (group.Invaders[a, b] != null)
                         {
-                            group.Invaders[a, b].Speed = new Vector2(-20, 0);
-                            for (int i = 0; a < group.Invaders.Length; i++)
-                            {
-                                group.Invaders[a, b].Speed = new Vector2(0, 20);
-                            }
-
+                            group.Invaders[a, b].Update();
                         }
-                        else if (group.Invaders[a, b].Position.X <= 0)
-                        {
-                            group.Invaders[a, b].Speed = new Vector2(20, 0);
-                            for (int c = 0; c < group.Invaders.Length; c++)
-                            {
-                                group.Invaders[a, b].Speed = new Vector2(0, 20);
-                            }
 
+                        if (group.Invaders[a, b] != null)
+                        { 
+                            if (group.Invaders[a, b].Position.X + group.Invaders[a, b].ScaledWidth >= GraphicsDevice.Viewport.Width)
+                            {
+                                group.Invaders[a, b].Speed = new Vector2(-20, 0);
+                                for (int i = 0; a < group.Invaders.Length; i++)
+                                {
+                                    group.Invaders[a, b].Speed = new Vector2(0, 20);
+                                }
+
+                            }
+                            else if (group.Invaders[a, b].Position.X <= 0)
+                            {
+                                group.Invaders[a, b].Speed = new Vector2(20, 0);
+                                for (int c = 0; c < group.Invaders.Length; c++)
+                                {
+                                    group.Invaders[a, b].Speed = new Vector2(0, 20);
+                                }
+
+                            }
                         }
                     }
                 }
                 elapsedTime = TimeSpan.Zero;
             }
            
-                prevks = ks;
+            prevks = ks;
             base.Update(gameTime);
         }
 
@@ -183,12 +195,19 @@ namespace SpaceInvaders
             {
                 for (int b = 0; b < group.HeightCount; b++)
                 {
-                    group.Invaders[a, b].Draw(spriteBatch);
+                    if (group.Invaders[a, b] != null)
+                    { 
+                        group.Invaders[a, b].Draw(spriteBatch);
+                    }
                 }
             }
             for (int i = 0; i < bullets.Count; i++)
             {
                 bullets[i].Draw(spriteBatch);
+            }
+            for (int i = 0; i < shields.Count; i++)
+            {
+                shields[i].Draw(spriteBatch);
             }
             spriteBatch.End();
             base.Draw(gameTime);

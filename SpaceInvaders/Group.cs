@@ -9,8 +9,6 @@ namespace SpaceInvaders
     class Group
     {
         public Vector2 Position;
-        public int Width;
-        public int Height;
         public int WidthCount;
         public int HeightCount;
         public Invaders[,] Invaders;
