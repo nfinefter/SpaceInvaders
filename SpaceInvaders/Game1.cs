@@ -22,6 +22,7 @@ namespace SpaceInvaders
         Texture2D invaderTexture;
         Texture2D shipTexture;
         Texture2D shieldTexture;
+        SpriteFont Font;
         Ship ship;
         List<Bullet> bullets = new List<Bullet>();
         List<Bullet> evilBullets = new List<Bullet>();
@@ -55,6 +56,7 @@ namespace SpaceInvaders
             invaderTexture = Content.Load<Texture2D>("invader");
             shipTexture = Content.Load<Texture2D>("ship");
             shieldTexture = Content.Load<Texture2D>("shield");
+           // Font = Content.Load<SpriteFont>("Font");
 
             ship = new Ship(new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 50), shipTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2), 0);
            
@@ -123,6 +125,7 @@ namespace SpaceInvaders
             }
             for (int i = 0; i < bullets.Count; i++)
             {
+                bool twoBreak = false;
                 for (int a = 0; a < group.WidthCount; a++)
                 {
                     for (int b = 0; b < group.HeightCount; b++)
@@ -133,15 +136,22 @@ namespace SpaceInvaders
                             {
                                 bullets.RemoveAt(i);
                                 group.Invaders[a, b] = null;
+
+                                twoBreak = true;
                                 break;
                             }
                         }
                     }
-                    
+                    if (twoBreak == true)
+                    {
+                        twoBreak = false;
+                        break;
+                    }
                 }
             }
             if (elapsedTime >= spaceInvaderMoveDelay)
             {
+
                 for (int a = 0; a < group.WidthCount; a++)
                 {
 
@@ -150,28 +160,41 @@ namespace SpaceInvaders
                         if (group.Invaders[a, b] != null)
                         {
                             group.Invaders[a, b].Update();
-                        }
 
-                        if (group.Invaders[a, b] != null)
-                        { 
-                            if (group.Invaders[a, b].Position.X + group.Invaders[a, b].ScaledWidth >= GraphicsDevice.Viewport.Width)
+                            if (group.Invaders[a, b].Position.X + group.Invaders[a, b].ScaledWidth + 10 >= GraphicsDevice.Viewport.Width)
                             {
-                                group.Invaders[a, b].Speed = new Vector2(-20, 0);
-                                for (int i = 0; a < group.Invaders.Length; i++)
+                                for (int c = 0; c < group.WidthCount; c++)
                                 {
-                                    group.Invaders[a, b].Speed = new Vector2(0, 20);
+                                    for (int d = 0;  d < group.HeightCount;  d++)
+                                    {
+                                        if (group.Invaders[c, d] != null)
+                                        {
+                                            group.Invaders[c, d].Speed = new Vector2(0, 20);
+                                            group.Invaders[c, d].Update();
+                                            group.Invaders[c, d].Speed = new Vector2(-20, 0);
+                                        }
+                                    }
+                                    
+                                }
+                            }
+                            else if (group.Invaders[a, b].Position.X - 10 <= 0)
+                            {
+                                for (int c = 0; c < group.WidthCount; c++)
+                                {
+                                    for (int d = 0; d < group.HeightCount; d++)
+                                    {
+                                        if (group.Invaders[c, d] != null)
+                                        {
+                                            group.Invaders[c, d].Speed = new Vector2(0, 20);
+                                            group.Invaders[c, d].Update();
+                                            group.Invaders[c, d].Speed = new Vector2(20, 0);
+                                        }
+                                    }
+
                                 }
 
                             }
-                            else if (group.Invaders[a, b].Position.X <= 0)
-                            {
-                                group.Invaders[a, b].Speed = new Vector2(20, 0);
-                                for (int c = 0; c < group.Invaders.Length; c++)
-                                {
-                                    group.Invaders[a, b].Speed = new Vector2(0, 20);
-                                }
 
-                            }
                         }
                     }
                 }
