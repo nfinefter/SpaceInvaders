@@ -60,9 +60,9 @@ namespace SpaceInvaders
 
             ship = new Ship(new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 50), shipTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2), 0);
            
-            shields.Add(new Shield(new Vector2(100, GraphicsDevice.Viewport.Height - 130), shieldTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2)));
-            shields.Add(new Shield(new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 130), shieldTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2)));
-            shields.Add(new Shield(new Vector2(GraphicsDevice.Viewport.Width - 100, GraphicsDevice.Viewport.Height - 130), shieldTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2)));
+            shields.Add(new Shield(new Vector2(100, GraphicsDevice.Viewport.Height - 130), shieldTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2), 50));
+            shields.Add(new Shield(new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 130), shieldTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2), 50));
+            shields.Add(new Shield(new Vector2(GraphicsDevice.Viewport.Width - 100, GraphicsDevice.Viewport.Height - 130), shieldTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2), 50));
             
             group = new Group(new Vector2(0, 0), 4, 8, invaderTexture);
             
@@ -95,50 +95,112 @@ namespace SpaceInvaders
             }
 
             for (int i = 0; i < bullets.Count; i++)
-            {
-                if (bullets[i].Position.X + bullets[i].ScaledWidth >= GraphicsDevice.Viewport.Width)
-                {
-                    bullets.RemoveAt(i);
-                    i--;
-                    continue;
-                }
-                else if (bullets[i].Position.X <= 0)
-                {
-                    bullets.RemoveAt(i);
-                    i--;
-                    continue;
-                }
-                else if (bullets[i].Position.Y + bullets[i].ScaledHeight >= GraphicsDevice.Viewport.Height)
-                {
-                    bullets.RemoveAt(i);
-                    i--;
-                    continue;
-                }
-                else if (bullets[i].Position.Y <= 0)
-                {
-                    bullets.RemoveAt(i);
-                    i--;
-                    continue;
-                }
+            {  
+                    if (bullets[i].Position.X + bullets[i].ScaledWidth >= GraphicsDevice.Viewport.Width)
+                    {
+                        bullets.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+                    else if (bullets[i].Position.X <= 0)
+                    {
+                        bullets.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+                    else if (bullets[i].Position.Y + bullets[i].ScaledHeight >= GraphicsDevice.Viewport.Height)
+                    {
+                        bullets.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+                    else if (bullets[i].Position.Y <= 0)
+                    {
+                        bullets.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+                
 
                 bullets[i].Update();
             }
+            for (int i = 0; i < evilBullets.Count; i++)
+            {
+                if (evilBullets[i].Position.X + evilBullets[i].ScaledWidth >= GraphicsDevice.Viewport.Width)
+                {
+                    evilBullets.RemoveAt(i);
+                    i--;
+                    continue;
+                }
+                else if (evilBullets[i].Position.X <= 0)
+                {
+                    evilBullets.RemoveAt(i);
+                    i--;
+                    continue;
+                }
+                else if (evilBullets[i].Position.Y + evilBullets[i].ScaledHeight >= GraphicsDevice.Viewport.Height)
+                {
+                    evilBullets.RemoveAt(i);
+                    i--;
+                    continue;
+                }
+                else if (evilBullets[i].Position.Y <= 0)
+                {
+                    evilBullets.RemoveAt(i);
+                    i--;
+                    continue;
+                }
+
+
+                evilBullets[i].Update();
+            }
             for (int i = 0; i < bullets.Count; i++)
             {
-                bool twoBreak = false;
-                for (int a = 0; a < group.WidthCount; a++)
-                {
-                    for (int b = 0; b < group.HeightCount; b++)
+                    bool twoBreak = false;
+                    for (int a = 0; a < group.WidthCount; a++)
                     {
-                        if (group.Invaders[a, b] != null)
+                        for (int b = 0; b < group.HeightCount; b++)
                         {
-                            if (bullets[i].HitBox.Intersects(group.Invaders[a, b].HitBox))
+                            if (group.Invaders[a, b] != null)
                             {
-                                bullets.RemoveAt(i);
-                                group.Invaders[a, b] = null;
+                                if (bullets[i].HitBox.Intersects(group.Invaders[a, b].HitBox))
+                                {
+                                    bullets.RemoveAt(i);
+                                    group.Invaders[a, b] = null;
 
-                                twoBreak = true;
-                                break;
+                                    twoBreak = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (twoBreak == true)
+                        {
+                            twoBreak = false;
+                            break;
+                        }
+                    }
+         
+            }
+            for (int z = 0; z < shields.Count; z++)
+            {
+
+                for (int i = 0; i < evilBullets.Count; i++)
+                {
+                    bool twoBreak = false;
+                    for (int a = 0; a < group.WidthCount; a++)
+                    {
+                        for (int b = 0; b < group.HeightCount; b++)
+                        {
+                            if (group.Invaders[a, b] != null)
+                            {
+                                if (evilBullets[i].HitBox.Intersects(shields[z].HitBox))
+                                {
+                                    evilBullets.RemoveAt(i);
+                                    shields[i].Health -= 10;
+
+                                    twoBreak = true;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -147,11 +209,11 @@ namespace SpaceInvaders
                         twoBreak = false;
                         break;
                     }
+
                 }
             }
             if (elapsedTime >= spaceInvaderMoveDelay)
             {
-
                 for (int a = 0; a < group.WidthCount; a++)
                 {
 
@@ -170,9 +232,9 @@ namespace SpaceInvaders
                                         if (group.Invaders[c, d] != null)
                                         {
                                             group.Invaders[c, d].Speed = new Vector2(0, 20);
-                                            group.Invaders[c, d].Update();
-                                            group.Invaders[c, d].Speed = new Vector2(-20, 0);
+                                            group.Invaders[c, d].Update(); 
                                         }
+                                        group.Invaders[c, d].Speed = new Vector2(-20, 0);
                                     }
                                     
                                 }
@@ -187,14 +249,29 @@ namespace SpaceInvaders
                                         {
                                             group.Invaders[c, d].Speed = new Vector2(0, 20);
                                             group.Invaders[c, d].Update();
-                                            group.Invaders[c, d].Speed = new Vector2(20, 0);
                                         }
+                                        group.Invaders[c, d].Speed = new Vector2(20, 0);
                                     }
 
                                 }
 
                             }
 
+                        }
+                    }
+                }
+                
+                for (int a = 0; a < group.WidthCount; a++)
+                {
+
+                    for (int b = 0; b < group.HeightCount; b++)
+                    {
+                        if (group.Invaders[a, b] != null)
+                        {
+                            if (rand.Next(0, 10) == 1)
+                            {
+                                evilBullets.Add(new Bullet(new Vector2(group.Invaders[a, b].Position.X, group.Invaders[a, b].Position.Y), bulletTexture, new Vector2(0.1f, 0.1f), Color.White, ship.Rotation, new Vector2(bulletTexture.Width / 2, bulletTexture.Height / 2), new Vector2(0, 2)));
+                            }
                         }
                     }
                 }
@@ -227,6 +304,10 @@ namespace SpaceInvaders
             for (int i = 0; i < bullets.Count; i++)
             {
                 bullets[i].Draw(spriteBatch);
+            }
+            for (int i = 0; i < evilBullets.Count; i++)
+            {
+                evilBullets[i].Draw(spriteBatch);
             }
             for (int i = 0; i < shields.Count; i++)
             {
