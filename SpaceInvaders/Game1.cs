@@ -27,6 +27,8 @@ namespace SpaceInvaders
         List<Bullet> bullets = new List<Bullet>();
         List<Bullet> evilBullets = new List<Bullet>();
         List<Shield> shields = new List<Shield>();
+        bool gameOver = false;
+        bool allInvadersDead = false;
 
         Group group;
 
@@ -35,6 +37,23 @@ namespace SpaceInvaders
         KeyboardState prevks;
         Random rand = new Random();
 
+        public void endGame()
+        {
+            gameOver = true;
+            for (int i = 0; i < shields.Count; i++)
+            {
+                shields[i].Health = 0;
+            }
+
+        }
+        public void Reset()
+        {
+            gameOver = false;
+            for (int i = 0; i < shields.Count; i++)
+            {
+                shields[i].Health = 50;
+            }
+        }
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here\
@@ -56,7 +75,7 @@ namespace SpaceInvaders
             invaderTexture = Content.Load<Texture2D>("invader");
             shipTexture = Content.Load<Texture2D>("ship");
             shieldTexture = Content.Load<Texture2D>("shield");
-           // Font = Content.Load<SpriteFont>("Font");
+            Font = Content.Load<SpriteFont>("Font");
 
             ship = new Ship(new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 50), shipTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2), 0);
            
@@ -68,7 +87,7 @@ namespace SpaceInvaders
             
         }
 
-        protected override void Update(GameTime gameTime)
+        protected async override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -165,12 +184,34 @@ namespace SpaceInvaders
                             {
                                 if (bullets[i].HitBox.Intersects(group.Invaders[a, b].HitBox))
                                 {
-                                    bullets.RemoveAt(i);
-                                    group.Invaders[a, b] = null;
+                                bullets.RemoveAt(i);
+                                group.Invaders[a, b] = null;
+                                allInvadersDead = true;
 
-                                    twoBreak = true;
-                                    break;
+                                for (int c = 0; c < group.WidthCount; c++)
+                                {
+                                    for (int d = 0; d < group.HeightCount; d++)
+                                    {
+                                        if (group.Invaders[c, d] != null)
+                                        {
+                                            allInvadersDead = false;
+                                        }
+                                    }
                                 }
+                                if (allInvadersDead == true)
+                                {
+                                    endGame();
+                                    var result = await MessageBox.Show("You Win!", "Play Again?", new List<string>() { "Yes", "No" });
+                                    if (result == 0)
+                                    {
+                                        Reset();
+                                    }
+                                    else
+                                    {
+                                        Exit();
+                                    }
+                                }
+                            }
                             }
                         }
                         if (twoBreak == true)
@@ -196,10 +237,26 @@ namespace SpaceInvaders
                                 if (evilBullets[i].HitBox.Intersects(shields[z].HitBox))
                                 {
                                     evilBullets.RemoveAt(i);
-                                    shields[i].Health -= 10;
-
+                                    shields[z].Health -= 10;
+                                    if (shields[z].Health <= 0)
+                                    {
+                                        shields[z].Position = new Vector2(-10, -10);
+                                    }
                                     twoBreak = true;
                                     break;
+                                }
+                                if (evilBullets[i].HitBox.Intersects(ship.HitBox))
+                                {
+                                    endGame();
+                                    var result = await MessageBox.Show("You Lose!", "Play Again?", new List<string>() { "Yes", "No" });
+                                    if (result == 0)
+                                    {
+                                        Reset();
+                                    }
+                                    else
+                                    {
+                                        Exit();
+                                    }
                                 }
                             }
                         }
@@ -284,34 +341,42 @@ namespace SpaceInvaders
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.White);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
 
-            ship.Draw(spriteBatch);
 
-            for (int a = 0; a < group.WidthCount; a++)
+            if (gameOver == false)
             {
-                for (int b = 0; b < group.HeightCount; b++)
+                ship.Draw(spriteBatch);
+
+                for (int a = 0; a < group.WidthCount; a++)
                 {
-                    if (group.Invaders[a, b] != null)
-                    { 
-                        group.Invaders[a, b].Draw(spriteBatch);
+                    for (int b = 0; b < group.HeightCount; b++)
+                    {
+                        if (group.Invaders[a, b] != null)
+                        {
+                            group.Invaders[a, b].Draw(spriteBatch);
+                        }
                     }
                 }
-            }
-            for (int i = 0; i < bullets.Count; i++)
-            {
-                bullets[i].Draw(spriteBatch);
-            }
-            for (int i = 0; i < evilBullets.Count; i++)
-            {
-                evilBullets[i].Draw(spriteBatch);
-            }
-            for (int i = 0; i < shields.Count; i++)
-            {
-                shields[i].Draw(spriteBatch);
+                for (int i = 0; i < bullets.Count; i++)
+                {
+                    bullets[i].Draw(spriteBatch);
+                }
+                for (int i = 0; i < evilBullets.Count; i++)
+                {
+                    evilBullets[i].Draw(spriteBatch);
+                }
+                for (int i = 0; i < shields.Count; i++)
+                {
+                    if (shields[i].Health > 0)
+                    {
+                        shields[i].Draw(spriteBatch);
+                        spriteBatch.DrawString(Font, $"{shields[i].Health}", new Vector2(shields[i].Position.X - 10, shields[i].Position.Y - 5), Color.Red);
+                    }
+                }
             }
             spriteBatch.End();
             base.Draw(gameTime);
