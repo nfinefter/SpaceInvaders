@@ -29,7 +29,7 @@ namespace SpaceInvaders
                 y += 50;
                 for (int j = 0; j < HeightCount; j++)
                 {
-                    Invaders[i, j] = new Invaders(new Vector2(x, y), texture, new Vector2(0.2f, 0.2f), Color.White, 0, new Vector2(0, 0), new Vector2(20, 0));
+                    Invaders[i, j] = new Invaders(new Vector2(x, y), texture, new Vector2(0.04f, 0.04f), Color.White, 0, new Vector2(0, 0), new Vector2(20, 0));
                     x += 50;
                 }
             }
