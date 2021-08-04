@@ -317,8 +317,8 @@ namespace SpaceInvaders
                                         {
                                             group.Invaders[c, d].Speed = new Vector2(0, 20);
                                             group.Invaders[c, d].Update();
+                                            group.Invaders[c, d].Speed = new Vector2(-20, 0);
                                         }
-                                        group.Invaders[c, d].Speed = new Vector2(-20, 0);
                                     }
 
                                 }
@@ -333,8 +333,9 @@ namespace SpaceInvaders
                                         {
                                             group.Invaders[c, d].Speed = new Vector2(0, 20);
                                             group.Invaders[c, d].Update();
+                                            group.Invaders[c, d].Speed = new Vector2(20, 0);
                                         }
-                                        group.Invaders[c, d].Speed = new Vector2(20, 0);
+
                                     }
 
                                 }
