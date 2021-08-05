@@ -23,11 +23,16 @@ namespace SpaceInvaders
         Texture2D invaderTexture;
         Texture2D shipTexture;
         Texture2D shieldTexture;
+        Texture2D backTexture;
+        Texture2D foreTexture;
         SpriteFont Font;
         Ship ship;
         List<Bullet> bullets = new List<Bullet>();
         List<Bullet> evilBullets = new List<Bullet>();
         List<Shield> shields = new List<Shield>();
+        Sprite backGround;
+        Sprite foreGround;
+        ProgressBar progressBar;
         bool gameOver = false;
         bool allInvadersDead = false;
 
@@ -76,6 +81,9 @@ namespace SpaceInvaders
             shields.Add(new Shield(new Vector2(GraphicsDevice.Viewport.Width - 100, GraphicsDevice.Viewport.Height - 130), shieldTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2), 50));
             
             ship.Position = new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 50);
+
+            progressBar.Position = new Vector2(ship.Position.X, ship.Position.Y - 10);
+
             group = new Group(new Vector2(0, 0), 4, 8, invaderTexture);
         }
         protected override void Initialize()
@@ -99,6 +107,8 @@ namespace SpaceInvaders
             invaderTexture = Content.Load<Texture2D>("invader");
             shipTexture = Content.Load<Texture2D>("ship");
             shieldTexture = Content.Load<Texture2D>("shield");
+            Texture2D backTexture = Content.Load<Texture2D>("background");
+            Texture2D foreTexture = Content.Load<Texture2D>("foreground");
             Font = Content.Load<SpriteFont>("Font");
 
             ship = new Ship(new Vector2(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height - 50), shipTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2), 0);
@@ -108,6 +118,11 @@ namespace SpaceInvaders
             shields.Add(new Shield(new Vector2(GraphicsDevice.Viewport.Width - 100, GraphicsDevice.Viewport.Height - 130), shieldTexture, new Vector2(0.3f, 0.3f), Color.White, 0, new Vector2(shipTexture.Width / 2, shipTexture.Height / 2), 50));
 
             group = new Group(new Vector2(0, 0), 4, 8, invaderTexture);
+
+            backGround = new Sprite(new Vector2(ship.Position.X - backTexture.Width*.3f/2, ship.Position.Y + 40), backTexture, new Vector2(0.3f, 0.03f), Color.Black, 0, new Vector2(0, backTexture.Height / 2));
+            foreGround = new Sprite(new Vector2(ship.Position.X - backTexture.Width*.3f/2, ship.Position.Y + 40), foreTexture, new Vector2(0.3f, 0.03f), Color.Green, 0, new Vector2(0, backTexture.Height / 2));
+
+            progressBar = new ProgressBar(new Vector2(ship.Position.X, ship.Position.Y + 40), 100, new Vector2(0.3f, 0.03f), backGround, foreGround);
 
         }
 
@@ -405,6 +420,8 @@ namespace SpaceInvaders
             if (gameOver == false)
             {
                 ship.Draw(spriteBatch);
+                progressBar.Draw(spriteBatch);
+
 
                 for (int a = 0; a < group.WidthCount; a++)
                 {
