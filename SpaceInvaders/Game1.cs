@@ -177,7 +177,7 @@ namespace SpaceInvaders
             
             for (int i = 0; i < bullets.Count; i++)
             {
-                if (bullets[i].Position.X + bullets[i].ScaledWidth >= GraphicsDevice.Viewport.Width)
+                if (bullets[i].Position.X + bullets[i].ScaledWidth - 20 >= GraphicsDevice.Viewport.Width)
                 {
                     bullets.RemoveAt(i);
                     i--;
