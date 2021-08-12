@@ -23,8 +23,6 @@ namespace SpaceInvaders
         Texture2D invaderTexture;
         Texture2D shipTexture;
         Texture2D shieldTexture;
-        Texture2D backTexture;
-        Texture2D foreTexture;
         SpriteFont Font;
         Ship ship;
         List<Bullet> bullets = new List<Bullet>();
@@ -35,11 +33,14 @@ namespace SpaceInvaders
         ProgressBar progressBar;
         bool gameOver = false;
         bool allInvadersDead = false;
+        bool shot = false;
 
         Group group;
 
         TimeSpan spaceInvaderMoveDelay = TimeSpan.FromSeconds(2);
+        TimeSpan bulletDelay = TimeSpan.FromMilliseconds(500);
         TimeSpan elapsedTime = TimeSpan.Zero;
+        TimeSpan elapsedTime1 = TimeSpan.Zero;
         KeyboardState prevks;
         Random rand = new Random();
 
@@ -47,11 +48,11 @@ namespace SpaceInvaders
         {
             gameOver = true;
 
-            for (int i = 0; i < bullets.Count; i++)
+            for (int i = bullets.Count - 1; i >= 0; i--)
             {
                 bullets.RemoveAt(i);
             }
-            for (int i = 0; i < evilBullets.Count; i++)
+            for (int i = evilBullets.Count - 1; i >= 0; i--)
             {
                 evilBullets.RemoveAt(i);
             }
@@ -119,10 +120,10 @@ namespace SpaceInvaders
 
             group = new Group(new Vector2(0, 0), 4, 8, invaderTexture);
 
-            backGround = new Sprite(new Vector2(ship.Position.X - backTexture.Width*.3f/2, ship.Position.Y + 40), backTexture, new Vector2(0.3f, 0.03f), Color.Black, 0, new Vector2(0, backTexture.Height / 2));
-            foreGround = new Sprite(new Vector2(ship.Position.X - backTexture.Width*.3f/2, ship.Position.Y + 40), foreTexture, new Vector2(0.3f, 0.03f), Color.Green, 0, new Vector2(0, backTexture.Height / 2));
+            backGround = new Sprite(new Vector2(ship.Position.X - backTexture.Width*.1f/2, ship.Position.Y + 40), backTexture, new Vector2(0.1f, 0.01f), Color.Black, 0, new Vector2(0, backTexture.Height / 2));
+            foreGround = new Sprite(new Vector2(ship.Position.X - backTexture.Width*.1f/2, ship.Position.Y + 40), foreTexture, new Vector2(0.1f, 0.01f), Color.Green, 0, new Vector2(0, backTexture.Height / 2));
 
-            progressBar = new ProgressBar(new Vector2(ship.Position.X, ship.Position.Y + 40), 100, new Vector2(0.3f, 0.03f), backGround, foreGround);
+            progressBar = new ProgressBar(new Vector2(ship.Position.X, ship.Position.Y + 40), 100, new Vector2(0.1f, 0.01f), backGround, foreGround);
 
         }
 
@@ -136,7 +137,7 @@ namespace SpaceInvaders
             KeyboardState ks = Keyboard.GetState();
 
             elapsedTime += gameTime.ElapsedGameTime;
-
+            elapsedTime1 += gameTime.ElapsedGameTime;
 
             if (ks.IsKeyDown(Keys.Left) == true && prevks.IsKeyDown(Keys.Right) == false)
             {
@@ -147,11 +148,33 @@ namespace SpaceInvaders
                 ship.Position = new Vector2(MathHelper.Min(ship.Position.X + 5, GraphicsDevice.Viewport.Width - ship.ScaledWidth + 25), ship.Position.Y + 0);
             }
 
-            if (ks.IsKeyDown(Keys.Space) == true && prevks.IsKeyDown(Keys.Space) == false)
+            if (ks.IsKeyDown(Keys.Space) == true && prevks.IsKeyDown(Keys.Space) == false && progressBar.Value == 100)
             {
-                bullets.Add(new Bullet(new Vector2(ship.Position.X, ship.Position.Y), bulletTexture, new Vector2(0.1f, 0.1f), Color.White, ship.Rotation, new Vector2(bulletTexture.Width / 2, bulletTexture.Height / 2), new Vector2(0, -5)));
+                if (elapsedTime1 >= bulletDelay)
+                {
+                    bullets.Add(new Bullet(new Vector2(ship.Position.X, ship.Position.Y), bulletTexture, new Vector2(0.1f, 0.1f), Color.White, ship.Rotation, new Vector2(bulletTexture.Width / 2, bulletTexture.Height / 2), new Vector2(0, -5)));
+                    elapsedTime1 = TimeSpan.Zero;
+                    progressBar.ChangeProgressAmount(0);
+                    shot = true;
+                }
+                
+
             }
 
+            if (shot == true)
+            {
+                if (elapsedTime1 < TimeSpan.FromMilliseconds(500))
+                {
+                    double product = elapsedTime1 / TimeSpan.FromMilliseconds(500);
+                    progressBar.ChangeProgressAmount(product);
+                }
+                else
+                {
+                    progressBar.ChangeProgressAmount(1);
+                    shot = false;
+                }
+            }
+            
             for (int i = 0; i < bullets.Count; i++)
             {
                 if (bullets[i].Position.X + bullets[i].ScaledWidth >= GraphicsDevice.Viewport.Width)
@@ -405,6 +428,7 @@ namespace SpaceInvaders
                 elapsedTime = TimeSpan.Zero;
             }
 
+            progressBar.ChangePosition(new Vector2(ship.Position.X - backGround.ScaledWidth / 2, ship.Position.Y + ship.HitBox.Height/2 + 20));
             prevks = ks;
             base.Update(gameTime);
         }
@@ -416,12 +440,10 @@ namespace SpaceInvaders
             // TODO: Add your drawing code here
             spriteBatch.Begin();
 
-
             if (gameOver == false)
             {
                 ship.Draw(spriteBatch);
                 progressBar.Draw(spriteBatch);
-
 
                 for (int a = 0; a < group.WidthCount; a++)
                 {

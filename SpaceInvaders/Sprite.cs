@@ -10,7 +10,7 @@ namespace SpaceInvaders
     {
         public Vector2 Position { get; set; }
         Texture2D Texture { get; set; }
-        Vector2 Scale { get; set; }
+        public Vector2 Scale { get; set; }
         Color Tint { get; set; }
         public float Rotation { get; set; }
         Vector2 Origin { get; set; }
